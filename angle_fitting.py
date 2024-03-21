@@ -91,8 +91,8 @@ def fit_fourier_series(data_file, n_order, minimizer, plot=True, output_file=Non
 
 
 # Example Usage
-data_file = "d_10_5_1_2.dat"
-n_order = 5
+data_file = "d_10_5_1_2.dat" # name of file from ORCA or XTB in angle energy format
+n_order = 5  # order of the cosine series 
 minimizers = [BFGS, BasinHopping, BFGS, BasinHopping]  # List of minimizers from scipy 
 output_file = "fit_results.json"  # Optional JSON output file (uncomment to use)
 fit_fourier_series(data_file, n_order, minimizer=minimizers, plot=True, output_file=output_file)
