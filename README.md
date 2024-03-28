@@ -1,8 +1,11 @@
 # Fitting torsional angle
 
-In this repository, we can find 2 files. The **angle_fitting.py**, where the program fitting is stored. The file
-**d_10_5_2_1.dat**, where the angles vs relaxed energies obtained by ORCA has been stored. This is for the molecule
-*poly_t_cispt*.
+In this repository, we can find 2 files. The **torsional_fitting.py**, where the program fitting is stored. The file
+**xtbscan.log** contains the results from a **xtb mol --opt tight --input scan.inp** calculations performed using the 
+molecule *hexane* stored in **mol.xyz**. This article presents the development of the proces:
+
+https://pubs.acs.org/doi/10.1021/ct200908r
+
 
 ## Remarks
 
