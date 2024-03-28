@@ -46,7 +46,7 @@ They can be used for subsequent calculation using **Gromacs** in a recursive man
 
 4. **FourierFitTool:** This module perform a Fourier series procedure:
 
-inline equation: $ x=y $
+$`x=y`$
 
 
 ```
