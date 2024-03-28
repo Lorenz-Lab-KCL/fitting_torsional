@@ -44,31 +44,45 @@ xtb_data_collector.save_xtb_scan_data("xtbscan.log", "scan_data.dat", scan_point
 3. **Coordinate processor:** This module creates a new folder with all coordinates/frames created by **xtb** or **ORCA**. The many files are stored in a folder called **sp_frames**.
 They can be used for subsequent calculation using **Gromacs** in a recursive manner. This module just needs the **xtbscan.lo** file. 
 
-4. **FourierFitTool:** This module perform a Fourier series procedure:
+4. **FourierFitTool:** This module perform a cosine fitting using this formula:
 
-$`x=y`$
+$`V_{rb}(\phi_{ijkl}) = \sum_{n=0}^5 C_n( \cos(n\psi ))`$
 
+That is a standard way of refitting the potential in **Gromacs**. This can be changed to use the powers of like:
+
+$`V_{rb}(\phi_{ijkl}) = \sum_{n=0}^5 C_n( \cos(\psi ))^n`$
+
+We can cutomise the options to the function, but for the moment I think his is enough. The code prints the results and outputs a plot showing the fitting and the raw data superimposed. 
+The parameters are also stored in a **.json** file called in this case **fit_results.json**. This can be opened by any text editor or by typing: 
+
+```
+head -n 90 fit_results.json
+```
+
+The fitting procedure can also be monitored by looking at 4 different variables, these are the **standard deviation** for each coefficient (this needs to be as low as possible), 
+the **chi square** parameter (also as low as possible), the **objective value** (as lowas possible), and the **r_squared** parameter that should be very close to 1. This is an example of 
+how the **torsional_fitting.py** with all the different modules can be used:
 
 ```
 if __name__ == "__main__":           
   #Example usage XTB_Template
-  #template_manager = XTB_Template()
-  #template_string = template_manager.create_template(
-  #    force_constant=0.15,
-  #    dihedral=[2, 3, 4, 5, 62.9],
-  #    scan_start=0.0,
-  #    scan_end=360.0,
-  #    scan_points=100,
-  #)
-  #template_manager.save_template_to_file("scan.inp", template_string)
+  template_manager = XTB_Template()
+  template_string = template_manager.create_template(
+      force_constant=0.15,
+      dihedral=[2, 3, 4, 5, 62.9],
+      scan_start=0.0,
+      scan_end=360.0,
+      scan_points=100,
+  )
+  template_manager.save_template_to_file("scan.inp", template_string)
 
   #Example usage XTB data collect
-  #xtb_data_collector = XTB_data_collect()
-  #xtb_data_collector.save_xtb_scan_data("xtbscan.log", "scan_data.dat", 100, 0.0, 360.0)
+  xtb_data_collector = XTB_data_collect()
+  xtb_data_collector.save_xtb_scan_data("xtbscan.log", "scan_data.dat", 100, 0.0, 360.0)
 
   #Postprocessing xtbscan.log for creating many frames for subsequent Gromacs calculation.
-  #processor = CoordinateProcessor("xtbscan.log")
-  #processor.format_and_write_data()
+  processor = CoordinateProcessor("xtbscan.log")
+  processor.format_and_write_data()
 
   # Example usage for fitting the data AFTER xtb - gromacs energy substraction.
   fit = FourierFitTool()
@@ -78,15 +92,11 @@ if __name__ == "__main__":
   # Or using cosine Fourier series
   fit.fit_fourier_series(data_file="scan_data.dat", n_order=3, minimizer=minimizers, fourier_type='cosine', output_file="fit_results.json")
 ```
+## REMARKS
+
+It is important to notice that the **scan_data.dat** provided for the fitting is the already **substracted values** from the **ab-initio**
+calculation and the **force-field**. One has to be careful of using the same **units**. Gromacs reports in **kj/mol** and either orca or xtb
+report in **au**. 
 
 
-The code prints the results and outputs a plot showing the fitting and the raw data superimposed. The parameters are also stored in 
-a .json file called in this case **fit_results.json**. This can be opened by any text editor or by typing: 
 
-```
-head -n 90 fit_results.json
-```
-
-The fitting procedure can also be monitored by looking at 4 different variables, these are the **standard deviation** for each 
-coefficient (this needs to be as low as possible), the **chi square** parameter (also as low as possible), the **objective value** (as low
-as possible), and the **r_squared** parameter that should be very close to 1. 
